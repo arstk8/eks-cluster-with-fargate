@@ -15,3 +15,26 @@ resource aws_eks_cluster cluster {
   }
   depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy_attachment]
 }
+
+data aws_iam_policy_document eks_cluster_assume_role {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["eks.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource aws_iam_role eks_cluster_role {
+  name               = "eksClusterRole"
+  assume_role_policy = data.aws_iam_policy_document.eks_cluster_assume_role.json
+}
+
+resource aws_iam_role_policy_attachment eks_cluster_policy_attachment {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.eks_cluster_role.name
+}
