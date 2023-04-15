@@ -8,6 +8,10 @@ resource aws_eks_fargate_profile eks_fargate_profile {
       infrastructure = "fargate"
     }
   }
+  subnet_ids = [
+    aws_subnet.private_subnet_01.id,
+    aws_subnet.private_subnet_02.id
+  ]
 }
 
 data aws_iam_policy_document eks_fargate_assume_role {
@@ -31,4 +35,20 @@ resource aws_iam_role eks_fargate_role {
 resource aws_iam_role_policy_attachment eks_fargate_policy_attachment {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
   role       = aws_iam_role.eks_fargate_role.name
+}
+
+resource aws_eks_fargate_profile coredns_fargate_profile {
+  cluster_name           = aws_eks_cluster.cluster.name
+  fargate_profile_name   = "coredns"
+  pod_execution_role_arn = aws_iam_role.eks_fargate_role.arn
+  selector {
+    namespace = "kube-system"
+    labels    = {
+      k8s-app = "kube-dns"
+    }
+  }
+  subnet_ids = [
+    aws_subnet.private_subnet_01.id,
+    aws_subnet.private_subnet_02.id
+  ]
 }
