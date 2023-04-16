@@ -16,6 +16,16 @@ resource aws_eks_cluster cluster {
   depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy_attachment]
 }
 
+data tls_certificate cluster_certificate {
+  url = aws_eks_cluster.cluster.identity[0].oidc[0].issuer
+}
+
+resource aws_iam_openid_connect_provider oidc_provider {
+  url             = aws_eks_cluster.cluster.identity[0].oidc[0].issuer
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.cluster_certificate.certificates[0].sha1_fingerprint]
+}
+
 data aws_iam_policy_document eks_cluster_assume_role {
   statement {
     effect = "Allow"
