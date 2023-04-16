@@ -24,10 +24,11 @@ spec:
     metadata:
       labels:
         app: auth
+        infrastructure: fargate
     spec:
       containers:
         - name: auth-api
-          image: academind/kub-dep-auth:latest
+          image: arstk8/kub-dep-auth:latest
           env:
             - name: TOKEN_KEY
               value: 'shouldbeverysecure'

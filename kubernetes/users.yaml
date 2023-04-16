@@ -24,10 +24,11 @@ spec:
     metadata:
       labels:
         app: users
+        infrastructure: fargate
     spec:
       containers:
         - name: users-api
-          image: academind/kub-dep-users:latest
+          image: arstk8/kub-dep-users:latest
           env:
             - name: MONGODB_CONNECTION_URI
               value: ''
